@@ -2,105 +2,146 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sonsuz Yol Yarışı</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>101 Okey - Yatay Mod</title>
     <style>
-        body { margin: 0; background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: Arial; color: white; }
-        canvas { background: #333; border: 5px solid #555; }
-        .ui { position: absolute; top: 20px; text-align: center; }
+        body { margin: 0; background: #0e3d12; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; touch-action: none; }
+        #game-container { position: relative; width: 100vw; height: 100vh; display: grid; grid-template-rows: 60px 1fr 140px; }
+        
+        /* Üst - Karşı Rakip */
+        .top-bot { display: flex; justify-content: center; align-items: center; }
+        
+        /* Orta Alan - Masa ve Yan Botlar */
+        .main-area { display: grid; grid-template-columns: 100px 1fr 100px; align-items: center; }
+        
+        .bot { border: 2px solid #555; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.4); width: 80px; margin: 0 auto; }
+        .active { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; transform: scale(1.05); transition: 0.3s; }
+
+        .table { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+        .piles { display: flex; gap: 30px; }
+        .draw-pile { width: 70px; height: 90px; background: #fff; border-radius: 6px; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; box-shadow: 4px 4px 0px #333; cursor: pointer; }
+        .discard-pile { width: 70px; height: 90px; border: 3px dashed rgba(255,255,255,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+
+        /* Alt - Senin Istakan */
+        .player-area { background: #4a2c12; border-top: 5px solid #2e1b0b; display: flex; flex-direction: column; padding: 5px; }
+        .rack { display: flex; gap: 6px; justify-content: center; overflow-x: auto; padding-bottom: 5px; }
+        .tile { background: #fdf5e6; color: #000; border-radius: 4px; min-width: 45px; height: 65px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 22px; box-shadow: 1px 2px 2px #000; cursor: pointer; border-bottom: 3px solid #ccc; }
+        
+        /* Renkler */
+        .red { color: #e74c3c; } .blue { color: #3498db; } .black { color: #000; } .yellow { color: #f39c12; }
+        
+        .controls { display: flex; justify-content: center; gap: 20px; margin-top: 5px; }
+        button { padding: 5px 20px; border-radius: 20px; border: none; background: #27ae60; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="ui">
-        <h1>HIZLI SÜRÜŞ</h1>
-        <p>Skor: <span id="score">0</span></p>
+
+<div id="game-container">
+    <div class="top-bot">
+        <div class="bot" id="bot2">İpek</div>
     </div>
-    <canvas id="raceCanvas"></canvas>
 
-    <script>
-        const canvas = document.getElementById("raceCanvas");
-        const ctx = canvas.getContext("2d");
-        const scoreEl = document.getElementById("score");
+    <div class="main-area">
+        <div class="bot" id="bot1">Seda</div>
+        <div class="table">
+            <div id="turn-info" style="font-size: 18px; color: #f1c40f;">Sıra Sende!</div>
+            <div class="piles">
+                <div class="draw-pile" id="drawBtn"><span>DESTE</span><small id="deckCount">77</small></div>
+                <div class="discard-pile" id="discardBox"></div>
+            </div>
+        </div>
+        <div class="bot" id="bot3">Rümeysa</div>
+    </div>
 
-        canvas.width = 400;
-        canvas.height = 600;
+    <div class="player-area">
+        <div class="rack" id="rack"></div>
+        <div class="controls">
+            <button onclick="sortTiles()">SIRALA</button>
+            <button onclick="alert('Henüz 101 sayısına ulaşamadın!')" style="background: #2980b9;">EL AÇ</button>
+        </div>
+    </div>
+</div>
 
-        let score = 0;
-        let speed = 5;
-        let gameActive = true;
+<script>
+    const colors = ['red', 'blue', 'black', 'yellow'];
+    let myTiles = [];
+    let turn = 0; 
+    let deck = [];
 
-        let car = { x: 175, y: 500, w: 50, h: 80, color: "#e74c3c" };
-        let enemies = [];
-
-        // Kontroller
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowLeft" && car.x > 0) car.x -= 25;
-            if (e.key === "ArrowRight" && car.x < canvas.width - car.w) car.x += 25;
-        });
-
-        // Dokunmatik/Mouse kontrolleri
-        canvas.addEventListener("mousemove", (e) => {
-            let rect = canvas.getBoundingClientRect();
-            let mouseX = e.clientX - rect.left;
-            car.x = mouseX - car.w / 2;
-            if (car.x < 0) car.x = 0;
-            if (car.x > canvas.width - car.w) car.x = canvas.width - car.w;
-        });
-
-        function spawnEnemy() {
-            let xPos = Math.random() * (canvas.width - 50);
-            enemies.push({ x: xPos, y: -100, w: 50, h: 80, color: "#3498db" });
-        }
-
-        setInterval(() => { if(gameActive) spawnEnemy(); }, 1200);
-
-        function draw() {
-            if (!gameActive) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Yol çizgileri
-            ctx.strokeStyle = "white";
-            ctx.setLineDash([20, 20]);
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.stroke();
-
-            // Kendi Arabamız
-            ctx.fillStyle = car.color;
-            ctx.fillRect(car.x, car.y, car.w, car.h);
-            // Arabanın farları
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(car.x + 5, car.y, 10, 5);
-            ctx.fillRect(car.x + car.w - 15, car.y, 10, 5);
-
-            // Düşman Arabalar
-            enemies.forEach((enemy, index) => {
-                enemy.y += speed;
-                ctx.fillStyle = enemy.color;
-                ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
-
-                // Çarpışma Testi
-                if (car.x < enemy.x + enemy.w &&
-                    car.x + car.w > enemy.x &&
-                    car.y < enemy.y + enemy.h &&
-                    car.y + car.h > enemy.y) {
-                    gameActive = false;
-                    alert("KAZA YAPTIN! Skorun: " + score);
-                    location.reload();
-                }
-
-                // Geçilen arabalar
-                if (enemy.y > canvas.height) {
-                    enemies.splice(index, 1);
-                    score += 10;
-                    scoreEl.innerText = score;
-                    if(score % 100 === 0) speed += 0.5; // Gittikçe hızlanır
-                }
+    function initGame() {
+        // Deste oluştur (106 taş)
+        for(let i=0; i<2; i++) {
+            colors.forEach(c => {
+                for(let n=1; n<=13; n++) deck.push({ color: c, num: n });
             });
-
-            requestAnimationFrame(draw);
         }
-        draw();
-    </script>
+        deck.push({ color: 'black', num: 'J' }, { color: 'red', num: 'J' }); // Okeyler
+        deck.sort(() => Math.random() - 0.5);
+
+        // Dağıt
+        myTiles = deck.splice(0, 21);
+        renderTiles();
+        updateUI();
+    }
+
+    function renderTiles() {
+        const rack = document.getElementById('rack');
+        rack.innerHTML = '';
+        myTiles.forEach((tile, index) => {
+            const div = document.createElement('div');
+            div.className = `tile ${tile.color}`;
+            div.innerHTML = tile.num;
+            div.onclick = () => discardTile(index);
+            rack.appendChild(div);
+        });
+        document.getElementById('deckCount').innerText = deck.length;
+    }
+
+    function discardTile(index) {
+        if(turn !== 0) return;
+        const discarded = myTiles.splice(index, 1)[0];
+        document.getElementById('discardBox').innerHTML = `<div class="tile ${discarded.color}">${discarded.num}</div>`;
+        renderTiles();
+        nextTurn();
+    }
+
+    function nextTurn() {
+        turn = (turn + 1) % 4;
+        updateUI();
+        if(turn !== 0) setTimeout(botPlay, 1500);
+    }
+
+    function botPlay() {
+        const currentBot = document.getElementById(`bot${turn}`);
+        currentBot.classList.add('active');
+        
+        setTimeout(() => {
+            // Rastgele bir taş atma efekti
+            const randomTile = { color: colors[Math.floor(Math.random()*4)], num: Math.floor(Math.random()*13)+1 };
+            document.getElementById('discardBox').innerHTML = `<div class="tile ${randomTile.color}">${randomTile.num}</div>`;
+            currentBot.classList.remove('active');
+            nextTurn();
+        }, 1200);
+    }
+
+    function updateUI() {
+        const names = ["Sıra Sende!", "Seda oynuyor...", "İpek oynuyor...", "Rümeysa oynuyor..."];
+        document.getElementById('turn-info').innerText = names[turn];
+    }
+
+    function sortTiles() {
+        myTiles.sort((a, b) => (a.color > b.color) ? 1 : (a.color === b.color) ? (a.num - b.num) : -1);
+        renderTiles();
+    }
+
+    document.getElementById('drawBtn').onclick = () => {
+        if(turn === 0 && myTiles.length < 22) {
+            myTiles.push(deck.pop());
+            renderTiles();
+        }
+    };
+
+    initGame();
+</script>
 </body>
 </html>
