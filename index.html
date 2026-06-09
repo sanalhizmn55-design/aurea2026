@@ -2,15 +2,22 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deva 101 - VIP Okey</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- GİRİŞ VE KAYIT EKRANI -->
-    <div id="auth-container" class="screen">
+    <div id="welcome-screen" class="screen">
+        <div class="auth-box">
+            <h1 class="logo">DEVA <span>101</span></h1>
+            <p class="subtitle">VIP ONLINE OKEY ELITE</p>
+            <button id="btn-start-fullscreen" class="btn btn-gold pulse">VIP OYUNA BAŞLA</button>
+        </div>
+    </div>
+
+    <div id="auth-container" class="screen hidden">
         <div class="auth-box">
             <h1 class="logo">DEVA <span>101</span></h1>
             <p class="subtitle">VIP ONLINE OKEY ELITE</p>
@@ -28,7 +35,6 @@
         </div>
     </div>
 
-    <!-- OYUN LOBİSİ VE MASALAR -->
     <div id="game-container" class="screen hidden">
         <header class="game-header">
             <div class="user-info">Hoş Geldiniz, <span id="display-name" class="gold-text">...</span></div>
@@ -37,11 +43,10 @@
         </header>
 
         <div class="lobby-panel" id="lobby-panel">
-            <button id="btn-find-match" class="btn btn-gold pulse">HIZLI MASAYA OTUR (ONLINE)</button>
+            <button id="btn-find-match" class="btn btn-gold">HIZLI MASAYA OTUR (ONLINE)</button>
             <p id="lobby-status" class="gold-text"></p>
         </div>
 
-        <!-- Gerçek Okey Masası -->
         <div class="okey-table hidden" id="okey-table">
             <div class="player player-top">Rakip 2 (Bekleniyor...)</div>
             <div class="player player-left">Rakip 1 (Bekleniyor...)</div>
@@ -52,7 +57,6 @@
                 <div id="discard-pile" class="discard">Atılan Taş</div>
             </div>
 
-            <!-- Oyuncunun Istakası -->
             <div class="player-me">
                 <div class="istaka" id="my-istaka"></div>
                 <div class="player-info-tag">SİZ</div>
@@ -60,7 +64,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Bağlantısı -->
     <script type="module" src="app.js"></script>
 </body>
 </html>
