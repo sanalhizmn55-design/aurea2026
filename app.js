@@ -10,12 +10,12 @@ const firebaseConfig = {
     messagingSenderId: "405865743713",
     appId: "1:405865743713:web:5b60bab107a5a5114f7120",
     measurementId: "G-9PGEFYYQH9",
-    databaseURL: "https://devaokey101-default-rtdb.firebaseio.com" // URL sonundaki slash düzeltildi
+    databaseURL: "https://devaokey101-default-rtdb.firebaseio.com"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app); // Doğru veritabanı referansı tetiklendi
+const database = getDatabase(app);
 
 // DOM Elemanları
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -39,40 +39,47 @@ let currentUser = null;
 let currentRoomId = null;
 let myPlayerSlot = null;
 
-// 📱 ADRES ÇUBUĞUNU GİZLEME, TAM EKRAN VE YATAY MODU TETİKLEMEK
-btnStartFullscreen.addEventListener('click', async () => {
+// Ekranı tam ekran yapma ve döndürme fonksiyonu
+async function triggerFullscreen() {
     try {
-        // Tam ekrana geçiş (Adres çubuğunu gizler)
         if (document.documentElement.requestFullscreen) {
             await document.documentElement.requestFullscreen();
-        } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+        } else if (document.documentElement.webkitRequestFullscreen) {
             await document.documentElement.webkitRequestFullscreen();
         }
-
-        // Ekranı Yatay (Landscape) Moda Zorla
         if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock('landscape').catch(err => console.log("Oryantasyon kilitleme desteklenmiyor."));
+            await screen.orientation.lock('landscape');
         }
-    } catch (error) {
-        console.log("Tam ekran başlatılamadı:", error);
+    } catch (e) {
+        console.log("Tam ekran veya yatay mod kısıtlaması.");
     }
+}
 
-    // İlk ekranı gizle, giriş ekranını aç
-    welcomeScreen.classList.add('hidden');
-    authContainer.classList.remove('hidden');
-});
+if(btnStartFullscreen) {
+    btnStartFullscreen.addEventListener('click', () => {
+        triggerFullscreen();
+        welcomeScreen.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+    });
+}
 
-// 1. KAYIT OLMA SİSTEMİ
+// 1. ÜCRETSİZ KAYIT OLMA SİSTEMİ
 btnRegister.addEventListener('click', () => {
-    const username = usernameInput.value.trim();
+    // replace(/\s+/g, '') kodu kullanıcı adındaki tüm boşlukları siler!
+    const username = usernameInput.value.trim().replace(/\s+/g, '');
     const password = passwordInput.value;
     
     if(!username || !password) {
         authError.innerText = "Lütfen alanları doldurun.";
         return;
     }
+    if(password.length < 6) {
+        authError.innerText = "VIP güvenliğiniz için şifre en az 6 karakter olmalıdır.";
+        return;
+    }
     
-    const fakeEmail = `${username}@deva101.com`;
+    authError.innerText = "Kayıt oluşturuluyor...";
+    const fakeEmail = `${username.toLowerCase()}@deva101.com`;
     
     createUserWithEmailAndPassword(auth, fakeEmail, password)
         .then((userCredential) => {
@@ -83,13 +90,13 @@ btnRegister.addEventListener('click', () => {
             });
         })
         .catch((error) => {
-            authError.innerText = "Kayıt hatası: Bu kullanıcı adı alınmış olabilir.";
+            authError.innerText = "Kayıt hatası: Bu kullanıcı adı zaten kullanımda.";
         });
 });
 
 // 2. GİRİŞ YAPMA SİSTEMİ
 btnLogin.addEventListener('click', () => {
-    const username = usernameInput.value.trim();
+    const username = usernameInput.value.trim().replace(/\s+/g, '');
     const password = passwordInput.value;
     
     if(!username || !password) {
@@ -97,7 +104,8 @@ btnLogin.addEventListener('click', () => {
         return;
     }
     
-    const fakeEmail = `${username}@deva101.com`;
+    authError.innerText = "Kontrol ediliyor...";
+    const fakeEmail = `${username.toLowerCase()}@deva101.com`;
     
     signInWithEmailAndPassword(auth, fakeEmail, password)
         .catch(error => {
@@ -114,7 +122,7 @@ btnLogout.addEventListener('click', () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        welcomeScreen.classList.add('hidden');
+        if(welcomeScreen) welcomeScreen.classList.add('hidden');
         authContainer.classList.add('hidden');
         gameContainer.classList.remove('hidden');
         
@@ -124,9 +132,12 @@ onAuthStateChanged(auth, (user) => {
         });
     } else {
         currentUser = null;
-        // Eğer kullanıcı çıkış yaparsa ilk karşılama ekranına dön
-        welcomeScreen.classList.remove('hidden');
-        authContainer.classList.add('hidden');
+        if(welcomeScreen) {
+            welcomeScreen.classList.remove('hidden');
+            authContainer.classList.add('hidden');
+        } else {
+            authContainer.classList.remove('hidden');
+        }
         gameContainer.classList.add('hidden');
         okeyTable.classList.add('hidden');
         lobbyPanel.classList.remove('hidden');
@@ -136,6 +147,7 @@ onAuthStateChanged(auth, (user) => {
 
 // 5. ONLINE EŞLEŞME MOTORU
 btnFindMatch.addEventListener('click', () => {
+    triggerFullscreen(); // Oyuna girerken tam ekranı tekrar sağlama alalım
     lobbyStatus.innerText = "Boş VIP masalar aranıyor...";
     const roomsRef = ref(database, 'rooms');
     
@@ -273,7 +285,7 @@ function renderIstaka(taslar) {
         tasDiv.classList.add('tas', tas.renk);
         
         if(tas.renk === 'joker') {
-            text.innerText = "J";
+            tasDiv.innerText = "J";
             tasDiv.style.background = "#ffeb3b";
         } else {
             tasDiv.innerText = tas.sayi;
