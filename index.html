@@ -2,68 +2,520 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Deva 101 - VIP Okey</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurea - Premium Polo Shirt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #111111;
+            --accent-color: #c5a880;
+            --bg-light: #f9f9f9;
+            --text-dark: #222222;
+            --text-muted: #777777;
+            --border-color: #e5e5e5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background-color: #ffffff; color: var(--text-dark); overflow-x: hidden; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%; border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; background: white; z-index: 100;
+        }
+
+        .logo { font-size: 24px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; }
+        .logo span { color: var(--accent-color); }
+        .nav-icons { display: flex; gap: 20px; font-size: 20px; cursor: pointer; position: relative; }
+        
+        .cart-count {
+            position: absolute; top: -10px; right: -10px; background: var(--text-dark);
+            color: white; font-size: 11px; width: 18px; height: 18px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-weight: bold;
+        }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .hero-banner { background: var(--bg-light); padding: 60px 40px; text-align: center; border-radius: 4px; margin-bottom: 40px; }
+        .hero-banner h1 { font-size: 32px; font-weight: 600; margin-bottom: 10px; letter-spacing: 1px; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: white; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
+        .product-img-wrapper { width: 100%; height: 350px; background: #f5f5f5; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .product-info { padding: 20px; }
+        .product-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        
+        .product-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+        .product-meta .fa-heart { color: #e74c3c; }
+        .product-meta .fa-bookmark { color: #f1c40f; }
+        
+        .product-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .product-price { font-size: 18px; font-weight: 700; color: var(--primary-color); }
+        
+        .stock-badge { font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+        .in-stock { background: #e8f5e9; color: #2e7d32; }
+        .out-of-stock { background: #ffebee; color: #c62828; }
+
+        /* TRENDYOL TARZI DETAY MODAL PENCERESİ */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 900px; border-radius: 12px; display: flex; flex-wrap: wrap; overflow: hidden; position: relative; animation: fadeIn 0.3s ease; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #000; z-index: 10; }
+        .modal-left { flex: 1; min-width: 350px; background: #f9f9f9; display: flex; justify-content: center; align-items: center; max-height: 500px; }
+        .modal-left img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-right { flex: 1; min-width: 350px; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .modal-serial { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 10px; }
+        .modal-title { font-size: 24px; font-weight: 700; margin-bottom: 15px; }
+        .modal-stats { display: flex; gap: 20px; margin-bottom: 20px; font-size: 14px; color: var(--text-muted); }
+        .modal-desc { font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 25px; }
+        .modal-price { font-size: 26px; font-weight: 700; color: var(--primary-color); margin-bottom: 25px; }
+        
+        .add-to-cart-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .add-to-cart-btn:hover { background: #333; }
+
+        /* MÜŞTERİ SEPET SİDEBARI */
+        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background: white; box-shadow: -5px 0 15px rgba(0,0,0,0.1); z-index: 1100; transition: right 0.3s ease; display: flex; flex-direction: column; }
+        .cart-sidebar.active { right: 0; }
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); align-items: center;}
+        .cart-item img { width: 70px; height: 90px; object-fit: cover; border-radius: 4px; }
+        .cart-item-details { flex: 1; }
+        .cart-item-title { font-size: 14px; font-weight: 600; }
+        .cart-item-price { font-size: 15px; font-weight: 700; margin-top: 5px; }
+        .quantity-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+        .quantity-controls button { width: 25px; height: 25px; border: 1px solid var(--border-color); background: white; cursor: pointer; border-radius: 4px; }
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: var(--bg-light); }
+        .cart-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; margin-bottom: 15px; }
+        
+        .checkout-form { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .checkout-form input, .checkout-form textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
+        .submit-order-btn { background: #25d366; color: white; border: none; padding: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px; }
+
+        /* ADMİN SİSTEMİ EKRANI */
+        #admin-panel { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } .modal-content { flex-direction: column; } .cart-sidebar { width: 100%; right: -100%; } }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; }
+        
+        .admin-btn { background: var(--primary-color); color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .sync-btn { background: #2980b9; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .admin-products-list { display: flex; flex-direction: column; gap: 15px; }
+        .admin-product-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-light); }
+        .admin-actions { display: flex; gap: 10px; }
+        .edit-btn { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .delete-btn { background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    </style>
 </head>
 <body>
 
-    <div id="welcome-screen" class="screen">
-        <div class="auth-box">
-            <h1 class="logo">DEVA <span>101</span></h1>
-            <p class="subtitle">VIP ONLINE OKEY ELITE</p>
-            <button id="btn-start-fullscreen" class="btn btn-gold pulse">VIP OYUNA BAŞLA</button>
+    <!-- MÜŞTERİ SİSTEMİ NAVİGASYON -->
+    <header>
+        <div class="logo" onclick="routeTo('client')">Aurea<span>.</span></div>
+        <div class="nav-icons">
+            <i class="fas fa-shopping-bag" onclick="toggleCart(true)">
+                <span class="cart-count" id="cart-count">0</span>
+            </i>
         </div>
-    </div>
+    </header>
 
-    <div id="auth-container" class="screen hidden">
-        <div class="auth-box">
-            <h1 class="logo">DEVA <span>101</span></h1>
-            <p class="subtitle">VIP ONLINE OKEY ELITE</p>
-            
-            <div class="input-group">
-                <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+    <!-- VİTRİN -->
+    <div id="client-panel">
+        <div class="container">
+            <div class="hero-banner">
+                <h1>Premium Polo Yaka Koleksiyonu</h1>
+                <p>Minimalist tarz ve üstün konforun birleşimi.</p>
             </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Şifre" required>
-            </div>
-            
-            <button id="btn-login" class="btn btn-gold">GİRİŞ YAP</button>
-            <button id="btn-register" class="btn btn-outline">ÜCRETSİZ KAYIT OL</button>
-            <p id="auth-error" class="error-msg"></p>
-        </div>
-    </div>
-
-    <div id="game-container" class="screen hidden">
-        <header class="game-header">
-            <div class="user-info">Hoş Geldiniz, <span id="display-name" class="gold-text">...</span></div>
-            <h2 class="table-title">DEVA 101 - VIP MASA</h2>
-            <button id="btn-logout" class="btn-sm">Çıkış</button>
-        </header>
-
-        <div class="lobby-panel" id="lobby-panel">
-            <button id="btn-find-match" class="btn btn-gold">HIZLI MASAYA OTUR (ONLINE)</button>
-            <p id="lobby-status" class="gold-text"></p>
-        </div>
-
-        <div class="okey-table hidden" id="okey-table">
-            <div class="player player-top">Rakip 2 (Bekleniyor...)</div>
-            <div class="player player-left">Rakip 1 (Bekleniyor...)</div>
-            <div class="player player-right">Rakip 3 (Bekleniyor...)</div>
-            
-            <div class="table-center">
-                <div class="deck">Taş Çek</div>
-                <div id="discard-pile" class="discard">Atılan Taş</div>
-            </div>
-
-            <div class="player-me">
-                <div class="istaka" id="my-istaka"></div>
-                <div class="player-info-tag">SİZ</div>
+            <div class="products-grid" id="products-container">
+                <p style="text-align:center; grid-column: 1/-1; color:gray;">Ürünler yükleniyor...</p>
             </div>
         </div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <!-- TRENDYOL DETAY MODAL PENCERESİ -->
+    <div class="modal" id="product-modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-left"><img id="modal-img" src="" alt=""></div>
+            <div class="modal-right">
+                <span class="modal-serial" id="modal-serial">SERİ NO: #000000</span>
+                <h2 class="modal-title" id="modal-title">Ürün Adı</h2>
+                <div class="modal-stats">
+                    <span><i class="fas fa-heart"></i> <span id="modal-likes">0</span> Beğeni</span>
+                    <span><i class="fas fa-bookmark"></i> <span id="modal-saves">0</span> Koleksiyon</span>
+                </div>
+                <p class="modal-desc" id="modal-desc">Açıklama</p>
+                <div class="modal-price" id="modal-price">0.00 TL</div>
+                <button class="add-to-cart-btn" id="modal-add-btn"><i class="fas fa-shopping-bag"></i> Sepete Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÜŞTERİ SEPETİ VE SİPARİŞ FORMU -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Sepetim</h3>
+            <i class="fas fa-times" style="cursor:pointer; font-size:20px;" onclick="toggleCart(false)"></i>
+        </div>
+        <div class="cart-items" id="cart-items-container"></div>
+        <div class="cart-footer">
+            <div class="cart-total"><span>Toplam:</span><span id="cart-total-price">0.00 TL</span></div>
+            <h4>Sipariş Bilgileri</h4>
+            <div class="checkout-form">
+                <input type="text" id="cust-name" placeholder="Ad Soyad" required>
+                <input type="tel" id="cust-phone" placeholder="Telefon Numarası" required>
+                <textarea id="cust-address" placeholder="Açık Adres" rows="3" required></textarea>
+                <button class="submit-order-btn" onclick="submitOrder()"><i class="fab fa-whatsapp"></i> Siparişi Tamamla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMİN YÖNETİM SİSTEMİ PANELİ -->
+    <div id="admin-panel">
+        <div class="admin-header">
+            <h2>Aurea Yönetim Paneli</h2>
+            <button class="sync-btn" onclick="syncToClient()"><i class="fas fa-sync"></i> Siteye Senkronize Et</button>
+        </div>
+        <div class="admin-grid">
+            <!-- Ürün Ekleme / Düzenleme Formu -->
+            <div>
+                <h3 style="margin-bottom:20px;" id="form-action-title">Yeni Ürün Ekle</h3>
+                <form id="product-form" onsubmit="saveProduct(event)">
+                    <input type="hidden" id="edit-id">
+                    <input type="hidden" id="edit-img-url">
+                    <div class="form-group"><label>Ürün Adı</label><input type="text" id="prod-name" required></div>
+                    <div class="form-group"><label>Fiyat (TL)</label><input type="number" id="prod-price" required></div>
+                    <div class="form-group">
+                        <label>Stok Durumu</label>
+                        <select id="prod-stock"><option value="in">Stokta Var</option><option value="out">Tükendi</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ürün Görseli (Galeriden Seçme Özelliği)</label>
+                        <input type="file" id="prod-image" accept="image/*">
+                        <div id="img-preview" style="margin-top:10px; max-width:100px; display:none;"><img src="" id="preview-src" style="width:100%; border-radius:4px;"></div>
+                    </div>
+                    <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div><label>Beğenilme Sayısı</label><input type="number" id="prod-likes" value="0"></div>
+                        <div><label>Koleksiyona Kaydetme Sayısı</label><input type="number" id="prod-saves" value="0"></div>
+                    </div>
+                    <div class="form-group"><label>Ürün Açıklaması</label><textarea id="prod-desc" rows="4" required></textarea></div>
+                    <button type="submit" class="admin-btn" id="save-btn">Ürünü Taslağa Kaydet</button>
+                </form>
+            </div>
+            <!-- Taslak Ürünlerin Listesi -->
+            <div>
+                <h3 style="margin-bottom:20px;">Mevcut Taslak Ürünler</h3>
+                <div class="admin-products-list" id="admin-products-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULE INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Senin Gönderdiğin Canlı Canlı Firebase Config Bilgileri
+        const firebaseConfig = {
+            apiKey: "AIzaSyAFJWIH6OKvG-cdiBkzuPLJHI80sKdfRCk",
+            authDomain: "aurea2026-f95e1.firebaseapp.com",
+            projectId: "aurea2026-f95e1",
+            storageBucket: "aurea2026-f95e1.firebasestorage.app",
+            messagingSenderId: "846536437798",
+            appId: "1:846536437798:web:d10c547ebf8b02120d76e7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let dbProducts = [];
+        let activeProducts = [];
+        let cart = [];
+
+        // Firebase'den Verileri Çekme Modülü
+        async function loadData() {
+            try {
+                const draftSnap = await getDocs(collection(db, "draft_products"));
+                dbProducts = [];
+                draftSnap.forEach(doc => dbProducts.push({ id: doc.id, ...doc.data() }));
+
+                const liveDoc = await getDoc(doc(db, "live_system", "products"));
+                if (liveDoc.exists()) {
+                    activeProducts = liveDoc.data().list || [];
+                } else {
+                    activeProducts = [];
+                }
+                
+                renderAdminProducts();
+                renderClientProducts();
+            } catch (e) {
+                console.error("Veri senkronizasyon hatası: ", e);
+            }
+        }
+
+        // Dosya Seçildiğinde Canlı Önizleme Yapma
+        document.getElementById('prod-image').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                document.getElementById('preview-src').src = URL.createObjectURL(file);
+                document.getElementById('img-preview').style.display = 'block';
+            }
+        });
+
+        // Taslağa Ürün Kaydetme ve Düzenleme Yapısı
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value || Date.now().toString();
+            const name = document.getElementById('prod-name').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const stock = document.getElementById('prod-stock').value;
+            const likes = parseInt(document.getElementById('prod-likes').value) || 0;
+            const saves = parseInt(document.getElementById('prod-saves').value) || 0;
+            const desc = document.getElementById('prod-desc').value;
+            const fileInput = document.getElementById('prod-image');
+            let imgUrl = document.getElementById('edit-img-url').value || "https://via.placeholder.com/350x450?text=Aurea+Polo";
+
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.innerText = "Yükleniyor...";
+            saveBtn.disabled = true;
+
+            // Görsel Galeriden Seçildiyse Firebase Storage'a Gönderiliyor
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const storageRef = ref(storage, `products/${id}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                imgUrl = await getDownloadURL(storageRef);
+            }
+
+            const isEdit = document.getElementById('edit-id').value;
+            let serial = Math.floor(100000 + Math.random() * 900000).toString(); // Otomatik Belirlenen Seri Numarası
+            
+            if(isEdit) {
+                const existing = dbProducts.find(p => p.id === id);
+                if(existing) serial = existing.serial;
+            }
+
+            const productData = { serial, name, price, stock, img: imgUrl, likes, saves, desc };
+
+            await setDoc(doc(db, "draft_products", id), productData);
+            
+            resetForm();
+            await loadData();
+            alert("Ürün taslaklara başarıyla işlendi!");
+        }
+
+        // Siteye Senkronize Etme Modülü
+        window.syncToClient = async function() {
+            if(confirm("Taslakları siteye senkronize etmek istiyor musunuz? Müşteri ekranı anında güncellenecektir.")) {
+                await setDoc(doc(db, "live_system", "products"), { list: dbProducts });
+                alert("Site başarıyla senkronize edildi!");
+                await loadData();
+            }
+        }
+
+        // Düzenleme Tetikleyicisi
+        window.editProduct = function(id) {
+            const prod = dbProducts.find(p => p.id == id);
+            if(prod) {
+                document.getElementById('edit-id').value = prod.id;
+                document.getElementById('edit-img-url').value = prod.img;
+                document.getElementById('prod-name').value = prod.name;
+                document.getElementById('prod-price').value = prod.price;
+                document.getElementById('prod-stock').value = prod.stock;
+                document.getElementById('prod-likes').value = prod.likes;
+                document.getElementById('prod-saves').value = prod.saves;
+                document.getElementById('prod-desc').value = prod.desc;
+                document.getElementById('preview-src').src = prod.img;
+                document.getElementById('img-preview').style.display = 'block';
+                document.getElementById('form-action-title').innerText = "Ürünü Düzenle";
+                document.getElementById('save-btn').innerText = "Değişiklikleri Kaydet";
+            }
+        }
+
+        // Silme İşlemi
+        window.deleteProduct = async function(id) {
+            if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+                await deleteDoc(doc(db, "draft_products", id.toString()));
+                await loadData();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('edit-id').value = "";
+            document.getElementById('edit-img-url').value = "";
+            document.getElementById('img-preview').style.display = 'none';
+            document.getElementById('form-action-title').innerText = "Yeni Ürün Ekle";
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.innerText = "Ürünü Taslağa Kaydet";
+            saveBtn.disabled = false;
+        }
+
+        // Müşteri ve Admin Görünüm İşleyicileri
+        window.renderAdminProducts = function() {
+            const container = document.getElementById('admin-products-container');
+            container.innerHTML = "";
+            dbProducts.forEach(prod => {
+                container.innerHTML += `
+                    <div class="admin-product-item">
+                        <div>
+                            <strong>${prod.name}</strong> - ${prod.price} TL <br>
+                            <small style="color:gray;">Seri No: #${prod.serial} | Stok: ${prod.stock === 'in' ? 'Var' : 'Yok'}</small>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="edit-btn" onclick="editProduct('${prod.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deleteProduct('${prod.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.renderClientProducts = function() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = "";
+            if(activeProducts.length === 0) {
+                container.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:gray;'>Henüz ürün senkronize edilmedi.</p>";
+                return;
+            }
+            activeProducts.forEach(prod => {
+                container.innerHTML += `
+                    <div class="product-card" onclick="openModal('${prod.id}')">
+                        <div class="product-img-wrapper"><img src="${prod.img}"></div>
+                        <div class="product-info">
+                            <div class="product-title">${prod.name}</div>
+                            <div class="product-meta">
+                                <span><i class="fas fa-heart"></i> ${prod.likes}</span>
+                                <span><i class="fas fa-bookmark"></i> ${prod.saves}</span>
+                            </div>
+                            <div class="product-bottom">
+                                <div class="product-price">${prod.price} TL</div>
+                                <span class="stock-badge ${prod.stock === 'in' ? 'in-stock' : 'out-of-stock'}">${prod.stock === 'in' ? 'Stokta' : 'Tükendi'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.openModal = function(id) {
+            const prod = activeProducts.find(p => p.id == id);
+            if(prod) {
+                document.getElementById('modal-img').src = prod.img;
+                document.getElementById('modal-serial').innerText = `SERİ NO: #${prod.serial}`;
+                document.getElementById('modal-title').innerText = prod.name;
+                document.getElementById('modal-likes').innerText = prod.likes;
+                document.getElementById('modal-saves').innerText = prod.saves;
+                document.getElementById('modal-desc').innerText = prod.desc;
+                document.getElementById('modal-price').innerText = `${prod.price} TL`;
+                
+                const addBtn = document.getElementById('modal-add-btn');
+                if(prod.stock === 'out') {
+                    addBtn.innerText = "Stokta Yok"; addBtn.style.background = "#ccc"; addBtn.disabled = true;
+                } else {
+                    addBtn.innerText = "Sepete Ekle"; addBtn.style.background = "var(--primary-color)"; addBtn.disabled = false;
+                    addBtn.onclick = () => { addToCart(prod.id); closeModal(); };
+                }
+                document.getElementById('product-modal').style.display = 'flex';
+            }
+        }
+
+        window.addToCart = function(id) {
+            const prod = activeProducts.find(p => p.id == id);
+            if(!prod) return;
+            const cartItem = cart.find(item => item.id == id);
+            if(cartItem) { cartItem.quantity += 1; } else { cart.push({ ...prod, quantity: 1 }); }
+            updateCartUI();
+            toggleCart(true);
+        }
+
+        window.changeQuantity = function(id, delta) {
+            const item = cart.find(i => i.id == id);
+            if(item) {
+                item.quantity += delta;
+                if(item.quantity <= 0) cart = cart.filter(i => i.id != id);
+                updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const countBadge = document.getElementById('cart-count');
+            const totalText = document.getElementById('cart-total-price');
+            container.innerHTML = "";
+            let total = 0, totalItems = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                totalItems += item.quantity;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">${item.price} TL</div>
+                            <div class="quantity-controls">
+                                <button onclick="changeQuantity('${item.id}', -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="changeQuantity('${item.id}', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            countBadge.innerText = totalItems;
+            totalText.innerText = `${total.toFixed(2)} TL`;
+        }
+
+        // WhatsApp Entegrasyonlu ve Otomatik Seri Numaralı Mesaj Yapısı
+        window.submitOrder = function() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const address = document.getElementById('cust-address').value.trim();
+            if(!name || !phone || !address || cart.length === 0) { alert("Lütfen sepetinizi kontrol edin ve sipariş bilgilerini eksiksiz doldurun."); return; }
+
+            let message = `*Aurea Sipariş Talebi*\n\n*Müşteri Bilgileri:*\n👤 Ad Soyad: ${name}\n📞 Telefon: ${phone}\n📍 Adres: ${address}\n\n*İstenen Ürünler:*\n`;
+            let genelToplam = 0;
+            cart.forEach((item, index) => {
+                genelToplam += item.price * item.quantity;
+                message += `${index + 1}) ${item.name} (Seri No: #${item.serial})\n   Adet: ${item.quantity} | Fiyat: ${item.price} TL\n\n`;
+            });
+            message += `*Genel Toplam:* ${genelToplam.toFixed(2)} TL`;
+
+            // Özel Belirlenen Numaraya Gönderim Sağlanır: 0 505 061 93 93
+            window.open(`https://api.whatsapp.com/send?phone=905050619393&text=${encodeURIComponent(message)}`, '_blank');
+            cart = []; updateCartUI(); toggleCart(false);
+        }
+
+        window.closeModal = function() { document.getElementById('product-modal').style.display = 'none'; }
+        window.toggleCart = function(open) { const sidebar = document.getElementById('cart-sidebar'); if(open) sidebar.classList.add('active'); else sidebar.classList.remove('active'); }
+        window.routeTo = function(target) { if(target === 'admin') window.location.hash = "admin"; else window.location.hash = ""; checkRoute(); }
+        
+        function checkRoute() {
+            if (window.location.hash === "#admin") {
+                document.getElementById('client-panel').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                document.getElementById('client-panel').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+        }
+        window.addEventListener('hashchange', checkRoute);
+
+        checkRoute();
+        loadData();
+    </script>
 </body>
 </html>
