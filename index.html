@@ -60,7 +60,6 @@
         .in-stock { background: #e8f5e9; color: #2e7d32; }
         .out-of-stock { background: #ffebee; color: #c62828; }
 
-        /* TRENDYOL TARZI DETAY MODAL PENCERESİ */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal-content { background: white; width: 100%; max-width: 900px; border-radius: 12px; display: flex; flex-wrap: wrap; overflow: hidden; position: relative; animation: fadeIn 0.3s ease; }
         .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #000; z-index: 10; }
@@ -76,7 +75,6 @@
         .add-to-cart-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .add-to-cart-btn:hover { background: #333; }
 
-        /* MÜŞTERİ SEPET SİDEBARI */
         .cart-sidebar { position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background: white; box-shadow: -5px 0 15px rgba(0,0,0,0.1); z-index: 1100; transition: right 0.3s ease; display: flex; flex-direction: column; }
         .cart-sidebar.active { right: 0; }
         .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
@@ -95,7 +93,6 @@
         .checkout-form input, .checkout-form textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
         .submit-order-btn { background: #25d366; color: white; border: none; padding: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 15px; }
 
-        /* ADMİN SİSTEMİ EKRANI */
         #admin-panel { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); }
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
@@ -119,7 +116,6 @@
 </head>
 <body>
 
-    <!-- MÜŞTERİ SİSTEMİ NAVİGASYON -->
     <header>
         <div class="logo" onclick="routeTo('client')">Aurea<span>.</span></div>
         <div class="nav-icons">
@@ -129,7 +125,6 @@
         </div>
     </header>
 
-    <!-- VİTRİN -->
     <div id="client-panel">
         <div class="container">
             <div class="hero-banner">
@@ -142,7 +137,6 @@
         </div>
     </div>
 
-    <!-- TRENDYOL DETAY MODAL PENCERESİ -->
     <div class="modal" id="product-modal" onclick="if(event.target === this) closeModal()">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -161,7 +155,6 @@
         </div>
     </div>
 
-    <!-- MÜŞTERİ SEPETİ VE SİPARİŞ FORMU -->
     <div class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header">
             <h3>Sepetim</h3>
@@ -180,19 +173,16 @@
         </div>
     </div>
 
-    <!-- ADMİN YÖNETİM SİSTEMİ PANELİ -->
     <div id="admin-panel">
         <div class="admin-header">
             <h2>Aurea Yönetim Paneli</h2>
             <button class="sync-btn" onclick="syncToClient()"><i class="fas fa-sync"></i> Siteye Senkronize Et</button>
         </div>
         <div class="admin-grid">
-            <!-- Ürün Ekleme / Düzenleme Formu -->
             <div>
                 <h3 style="margin-bottom:20px;" id="form-action-title">Yeni Ürün Ekle</h3>
                 <form id="product-form" onsubmit="saveProduct(event)">
                     <input type="hidden" id="edit-id">
-                    <input type="hidden" id="edit-img-url">
                     <div class="form-group"><label>Ürün Adı</label><input type="text" id="prod-name" required></div>
                     <div class="form-group"><label>Fiyat (TL)</label><input type="number" id="prod-price" required></div>
                     <div class="form-group">
@@ -201,8 +191,8 @@
                     </div>
                     <div class="form-group">
                         <label>Ürün Görseli (Galeriden Seçme Özelliği)</label>
-                        <input type="file" id="prod-image" accept="image/*">
-                        <div id="img-preview" style="margin-top:10px; max-width:100px; display:none;"><img src="" id="preview-src" style="width:100%; border-radius:4px;"></div>
+                        <input type="file" id="prod-file" accept="image/*">
+                        <input type="hidden" id="prod-existing-img">
                     </div>
                     <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div><label>Beğenilme Sayısı</label><input type="number" id="prod-likes" value="0"></div>
@@ -212,7 +202,6 @@
                     <button type="submit" class="admin-btn" id="save-btn">Ürünü Taslağa Kaydet</button>
                 </form>
             </div>
-            <!-- Taslak Ürünlerin Listesi -->
             <div>
                 <h3 style="margin-bottom:20px;">Mevcut Taslak Ürünler</h3>
                 <div class="admin-products-list" id="admin-products-container"></div>
@@ -220,13 +209,13 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULE INTEGRATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Senin Gönderdiğin Canlı Canlı Firebase Config Bilgileri
+        // Senin ImgBB API Anahtarın buraya entegre edildi
+        const IMGBB_API_KEY = "224f0d6136620236a4989ad97d06d009";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAFJWIH6OKvG-cdiBkzuPLJHI80sKdfRCk",
             authDomain: "aurea2026-f95e1.firebaseapp.com",
@@ -238,13 +227,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         let dbProducts = [];
         let activeProducts = [];
         let cart = [];
 
-        // Firebase'den Verileri Çekme Modülü
         async function loadData() {
             try {
                 const draftSnap = await getDocs(collection(db, "draft_products"));
@@ -265,16 +252,6 @@
             }
         }
 
-        // Dosya Seçildiğinde Canlı Önizleme Yapma
-        document.getElementById('prod-image').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                document.getElementById('preview-src').src = URL.createObjectURL(file);
-                document.getElementById('img-preview').style.display = 'block';
-            }
-        });
-
-        // Taslağa Ürün Kaydetme ve Düzenleme Yapısı
         window.saveProduct = async function(e) {
             e.preventDefault();
             const id = document.getElementById('edit-id').value || Date.now().toString();
@@ -284,23 +261,46 @@
             const likes = parseInt(document.getElementById('prod-likes').value) || 0;
             const saves = parseInt(document.getElementById('prod-saves').value) || 0;
             const desc = document.getElementById('prod-desc').value;
-            const fileInput = document.getElementById('prod-image');
-            let imgUrl = document.getElementById('edit-img-url').value || "https://via.placeholder.com/350x450?text=Aurea+Polo";
+            
+            const fileInput = document.getElementById('prod-file');
+            const existingImg = document.getElementById('prod-existing-img').value;
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.innerText = "Yükleniyor...";
             saveBtn.disabled = true;
 
-            // Görsel Galeriden Seçildiyse Firebase Storage'a Gönderiliyor
+            let imgUrl = existingImg || "https://via.placeholder.com/350";
+
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                const storageRef = ref(storage, `products/${id}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                imgUrl = await getDownloadURL(storageRef);
+                const formData = new FormData();
+                formData.append("image", file);
+
+                try {
+                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBBB_API_KEY}`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const resData = await response.json();
+                    if (resData.success) {
+                        imgUrl = resData.data.url;
+                    } else {
+                        alert("Görsel yüklenemedi, lütfen API ayarlarını kontrol edin.");
+                        saveBtn.innerText = "Ürünü Taslağa Kaydet";
+                        saveBtn.disabled = false;
+                        return;
+                    }
+                } catch (error) {
+                    console.error("ImgBB yükleme hatası:", error);
+                    alert("Görsel yüklenirken bağlantı hatası oluştu.");
+                    saveBtn.innerText = "Ürünü Taslağa Kaydet";
+                    saveBtn.disabled = false;
+                    return;
+                }
             }
 
             const isEdit = document.getElementById('edit-id').value;
-            let serial = Math.floor(100000 + Math.random() * 900000).toString(); // Otomatik Belirlenen Seri Numarası
+            let serial = Math.floor(100000 + Math.random() * 900000).toString();
             
             if(isEdit) {
                 const existing = dbProducts.find(p => p.id === id);
@@ -316,7 +316,6 @@
             alert("Ürün taslaklara başarıyla işlendi!");
         }
 
-        // Siteye Senkronize Etme Modülü
         window.syncToClient = async function() {
             if(confirm("Taslakları siteye senkronize etmek istiyor musunuz? Müşteri ekranı anında güncellenecektir.")) {
                 await setDoc(doc(db, "live_system", "products"), { list: dbProducts });
@@ -325,26 +324,22 @@
             }
         }
 
-        // Düzenleme Tetikleyicisi
         window.editProduct = function(id) {
             const prod = dbProducts.find(p => p.id == id);
             if(prod) {
                 document.getElementById('edit-id').value = prod.id;
-                document.getElementById('edit-img-url').value = prod.img;
+                document.getElementById('prod-existing-img').value = prod.img;
                 document.getElementById('prod-name').value = prod.name;
                 document.getElementById('prod-price').value = prod.price;
                 document.getElementById('prod-stock').value = prod.stock;
                 document.getElementById('prod-likes').value = prod.likes;
                 document.getElementById('prod-saves').value = prod.saves;
                 document.getElementById('prod-desc').value = prod.desc;
-                document.getElementById('preview-src').src = prod.img;
-                document.getElementById('img-preview').style.display = 'block';
                 document.getElementById('form-action-title').innerText = "Ürünü Düzenle";
                 document.getElementById('save-btn').innerText = "Değişiklikleri Kaydet";
             }
         }
 
-        // Silme İşlemi
         window.deleteProduct = async function(id) {
             if(confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
                 await deleteDoc(doc(db, "draft_products", id.toString()));
@@ -355,15 +350,13 @@
         function resetForm() {
             document.getElementById('product-form').reset();
             document.getElementById('edit-id').value = "";
-            document.getElementById('edit-img-url').value = "";
-            document.getElementById('img-preview').style.display = 'none';
+            document.getElementById('prod-existing-img').value = "";
             document.getElementById('form-action-title').innerText = "Yeni Ürün Ekle";
             const saveBtn = document.getElementById('save-btn');
             saveBtn.innerText = "Ürünü Taslağa Kaydet";
             saveBtn.disabled = false;
         }
 
-        // Müşteri ve Admin Görünüm İşleyicileri
         window.renderAdminProducts = function() {
             const container = document.getElementById('admin-products-container');
             container.innerHTML = "";
@@ -479,12 +472,11 @@
             totalText.innerText = `${total.toFixed(2)} TL`;
         }
 
-        // WhatsApp Entegrasyonlu ve Otomatik Seri Numaralı Mesaj Yapısı
         window.submitOrder = function() {
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
             const address = document.getElementById('cust-address').value.trim();
-            if(!name || !phone || !address || cart.length === 0) { alert("Lütfen sepetinizi kontrol edin ve sipariş bilgilerini eksiksiz doldurun."); return; }
+            if(!name || !phone || !address || cart.length === 0) { alert("Lütfen sepetinizi kontrol edin."); return; }
 
             let message = `*Aurea Sipariş Talebi*\n\n*Müşteri Bilgileri:*\n👤 Ad Soyad: ${name}\n📞 Telefon: ${phone}\n📍 Adres: ${address}\n\n*İstenen Ürünler:*\n`;
             let genelToplam = 0;
@@ -494,7 +486,6 @@
             });
             message += `*Genel Toplam:* ${genelToplam.toFixed(2)} TL`;
 
-            // Özel Belirlenen Numaraya Gönderim Sağlanır: 0 505 061 93 93
             window.open(`https://api.whatsapp.com/send?phone=905050619393&text=${encodeURIComponent(message)}`, '_blank');
             cart = []; updateCartUI(); toggleCart(false);
         }
