@@ -213,16 +213,17 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Senin ImgBB API Anahtarın buraya entegre edildi
+        // ImgBB API Anahtarı korundu
         const IMGBB_API_KEY = "224f0d6136620236a4989ad97d06d009";
 
+        // Firebase orijinal çalışan projeye bağlandı
         const firebaseConfig = {
-            apiKey: "AIzaSyAFJWIH6OKvG-cdiBkzuPLJHI80sKdfRCk",
-            authDomain: "aurea2026-f95e1.firebaseapp.com",
-            projectId: "aurea2026-f95e1",
-            storageBucket: "aurea2026-f95e1.firebasestorage.app",
-            messagingSenderId: "846536437798",
-            appId: "1:846536437798:web:d10c547ebf8b02120d76e7"
+            apiKey: "AIzaSyClUBF4f5rULpmi_N4lluGYq0oOt-vPEF4",
+            authDomain: "enes-deva-centre.firebaseapp.com",
+            projectId: "enes-deva-centre",
+            storageBucket: "enes-deva-centre.firebasestorage.app",
+            messagingSenderId: "714234705374",
+            appId: "1:714234705374:web:a06a5921605815ee9e594f"
         };
 
         const app = initializeApp(firebaseConfig);
